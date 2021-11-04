@@ -1,21 +1,21 @@
 import numpy as np
 from scipy import interpolate
 import gym
-import box2dsim
+import ArmSim
 import matplotlib.pyplot as plt
 import shutil
 
 
-env = gym.make('Box2DSimOneArmOneEye-v0')
+env = gym.make('ArmSimOneArmOneEye-v0')
 env.set_seed(10)
 env.set_taskspace([-10, 50], [-10, 50])
 stime = 100
 trials = 3
 
-random = False 
+random = False
 
 if random is True:
-    actions = np.pi*env.rng.uniform(-0.5, 0.5, [10, 5])    
+    actions = np.pi*env.rng.uniform(-0.5, 0.5, [10, 5])
 else:
     actions = np.pi*np.array([
         [0.00,   0.00,  0.00,  0.00,  0.00],
@@ -49,16 +49,16 @@ ax1.set_title("Fovea")
 #    for k in range(trials):
 #        env.set_world(q)
 #        env.reset()
-#        for t in range(stime):  
+#        for t in range(stime):
 #            env.render("offline")
-#            
-#            env.renderer.ax.set_title("%s object" % 
+#
+#            env.renderer.ax.set_title("%s object" %
 #                    env.world_object_names[env.world_id][0].capitalize())
-#    
+#
 #            action = actions_interp[t]
 #            observation,*_ = env.step(action)
 #            sal = observation["VISUAL_SALIENCY"]
-#                
+#
 #            screen.set_array(sal/sal.max())
 #            fov.set_array(observation["VISUAL_SENSORS"])
 #            fig.savefig("frames/vsual%06d.png" % (env.renderer.ts - 1), dpi=200)
@@ -68,15 +68,14 @@ for q in range(4):
     for k in range(trials):
         env.set_world(q)
         env.reset()
-        for t in range(stime):  
+        for t in range(stime):
             env.render("human")
-            
-            env.renderer.ax.set_title("%s object" % 
+
+            env.renderer.ax.set_title("%s object" %
                     env.world_object_names[env.world_id][0].capitalize())
-    
+
             action = actions_interp[t]
             observation,*_ = env.step(action)
             touch = observation["TOUCH_SENSORS"]
             pos = observation["EYE_POS"]
             print(touch, pos)
-               

@@ -212,8 +212,9 @@ class ArmSimOneArmEnv(gym.Env):
                     )
 
                     vmean = verts.mean()
-                    verts = (verts - vmean) * (0.8 + 0.2 * self.rng.rand()) + 0.2 * self.rng.randn(*verts.shape)
-
+                    verts = (verts - vmean) * (
+                        0.8 + 0.2 * self.rng.rand()
+                    ) + 0.2 * self.rng.randn(*verts.shape)
 
                     world_dict["body"][i]["fixture"][0]["polygon"]["vertices"][
                         "x"
@@ -247,12 +248,10 @@ class ArmSimOneArmEnv(gym.Env):
 
         return world_dict
 
-
     def set_world(self, world_id=None, world_dict=None):
 
         world_dict = self.prepare_world(world_id, world_dict)
         self.sim = Sim(world_dict=world_dict)
-
 
     def reset(self, world_id=None, world_dict=None):
 

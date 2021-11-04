@@ -1,9 +1,9 @@
 import numpy as np
 from scipy import interpolate
 import gym
-import box2dsim
+import ArmSim
 
-env = gym.make('Box2DSimOneArm-v0')
+env = gym.make('ArmSimOneArm-v0')
 
 stime = 120
 actions = np.pi*np.array([
@@ -24,8 +24,7 @@ for joint_idx, joint_timeline in enumerate(actions.T):
     joint_timeline_interp = f(x)
     actions_interp[:, joint_idx] = joint_timeline_interp
 
-for t in range(stime):  
+for t in range(stime):
     env.render()
     action = actions_interp[t]
     o,*_ = env.step(action)
-

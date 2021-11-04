@@ -1,9 +1,9 @@
 import numpy as np
 import gym
-import box2dsim
+import ArmSim
 
 rng = np.random.RandomState(62)
-env = gym.make('Box2DSimOneArmOneEye-v0')
+env = gym.make('ArmSimOneArmOneEye-v0')
 env.set_world(3)
 stime = 10000
 action = [0, 0, 0, np.pi*0.3, np.pi*0.3]

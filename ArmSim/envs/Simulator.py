@@ -5,7 +5,7 @@ import time, sys, os, glob
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
 
-class  Box2DSim(object):
+class  ArmSim(object):
     """ 2D physics using box2d and a json conf file
     """
     @staticmethod
@@ -92,7 +92,7 @@ class VisualSensor:
         """
         Args:
 
-            sim (Box2DSim): a simulator object
+            sim (ArmSim): a simulator object
             shape (int, int): width, height of the retina in pixels
             rng (float, float): x and y range in the task space
 
@@ -120,7 +120,7 @@ class VisualSensor:
 
         Args:
 
-            sim (Box2DSim): a simulator object
+            sim (ArmSim): a simulator object
             focus (float, float): x, y of visual field center
 
         Returns:
@@ -170,7 +170,7 @@ class TestPlotter:
     def __init__(self, env, xlim=[-10, 30], ylim=[-10, 30], figsize=None, offline=False):
         """
         Args:
-            env (Box2DSim): a emulator object
+            env (ArmSim): a emulator object
 
         """
 
