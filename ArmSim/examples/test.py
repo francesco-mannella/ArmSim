@@ -3,18 +3,20 @@ from scipy import interpolate
 import gym
 import ArmSim
 
-env = gym.make('ArmSimOneArm-v0')
+env = gym.make("ArmSimOneArm-v0")
 
 stime = 120
-actions = np.pi*np.array([
-    [0.00,   0.00,  0.00,  0.00,  0.00],
-    [0.20,   -0.30, -0.20,  0.50 , 0.00],
-    [0.20,   -0.30, -0.30,  0.50 , 0.00],
-    [0.10,   -0.30, -0.30,  0.20 , 0.30],
-    [0.00,   -0.30, -0.30,  0.20 , 0.50],
-    [0.00,   -0.30, -0.30,  0.20 , 0.50],
-    [0.00,   -0.30, -0.30,  0.20 , 0.50],
-    ])
+actions = np.pi * np.array(
+    [
+        [0.00, 0.00, 0.00, 0.00, 0.00],
+        [0.20, -0.30, -0.20, 0.50, 0.00],
+        [0.20, -0.30, -0.30, 0.50, 0.00],
+        [0.10, -0.30, -0.30, 0.20, 0.30],
+        [0.00, -0.30, -0.30, 0.20, 0.50],
+        [0.00, -0.30, -0.30, 0.20, 0.50],
+        [0.00, -0.30, -0.30, 0.20, 0.50],
+    ]
+)
 
 actions_interp = np.zeros([stime, 5])
 for joint_idx, joint_timeline in enumerate(actions.T):
@@ -27,4 +29,4 @@ for joint_idx, joint_timeline in enumerate(actions.T):
 for t in range(stime):
     env.render()
     action = actions_interp[t]
-    o,*_ = env.step(action)
+    o, *_ = env.step(action)

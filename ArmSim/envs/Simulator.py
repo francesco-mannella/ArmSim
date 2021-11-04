@@ -2,19 +2,21 @@ from . import JsonToPyBox2D as json2d
 from .PID import PID
 import time, sys, os, glob
 
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
-class  ArmSim(object):
-    """ 2D physics using box2d and a json conf file
-    """
+
+class ArmSim(object):
+    """2D physics using box2d and a json conf file"""
+
     @staticmethod
     def loadWorldJson(world_file):
         jsw = json2d.load_json_data(world_file)
         return jsw
 
-
-    def __init__(self, world_file=None, world_dict=None, dt=1/80.0, vel_iters=30, pos_iters=2):
+    def __init__(
+        self, world_file=None, world_dict=None, dt=1 / 80.0, vel_iters=30, pos_iters=2
+    ):
         """
         Args:
 
@@ -35,11 +37,12 @@ class  ArmSim(object):
         self.world = world
         self.bodies = bodies
         self.joints = joints
-        self.joint_pids = { ("%s" % k): PID(dt=self.dt)
-                for k in list(self.joints.keys()) }
+        self.joint_pids = {
+            ("%s" % k): PID(dt=self.dt) for k in list(self.joints.keys())
+        }
 
     def contacts(self, bodyA, bodyB):
-        """ Read contacts between two parts of the simulation
+        """Read contacts between two parts of the simulation
 
         Args:
 
@@ -54,12 +57,12 @@ class  ArmSim(object):
         contacts = 0
         for ce in self.bodies[bodyA].contacts:
             if ce.contact.touching is True:
-                if ce.contact.fixtureB.body  == self.bodies[bodyB]:
+                if ce.contact.fixtureB.body == self.bodies[bodyB]:
                     contacts += len(ce.contact.manifold.points)
         return contacts
 
     def move(self, joint_name, angle):
-        """ change the angle of a joint
+        """change the angle of a joint
 
         Args:
 
@@ -71,22 +74,21 @@ class  ArmSim(object):
         pid.setpoint = angle
 
     def step(self):
-        """ A simulation step
-        """
+        """A simulation step"""
         for key in list(self.joints.keys()):
             self.joint_pids[key].step(self.joints[key].angle)
-            self.joints[key].motorSpeed = (self.joint_pids[key].output)
+            self.joints[key].motorSpeed = self.joint_pids[key].output
         self.world.Step(self.dt, self.vel_iters, self.pos_iters)
 
 
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 from matplotlib.path import Path
 
+
 class VisualSensor:
-    """ Compute the retina state at each ste of simulation
-    """
+    """Compute the retina state at each ste of simulation"""
 
     def __init__(self, sim, shape, rng):
         """
@@ -102,21 +104,21 @@ class VisualSensor:
         self.n_pixels = self.shape[0] * self.shape[1]
 
         # make a canvas with coordinates
-        x = np.arange(-self.shape[0]//2, self.shape[0]//2) + 1
-        y = np.arange(-self.shape[1]//2, self.shape[1]//2) + 1
+        x = np.arange(-self.shape[0] // 2, self.shape[0] // 2) + 1
+        y = np.arange(-self.shape[1] // 2, self.shape[1] // 2) + 1
         X, Y = np.meshgrid(x, y[::-1])
         self.grid = np.vstack((X.flatten(), Y.flatten())).T
-        self.scale = np.array(rng)/shape
-        self.radius = np.mean(np.array(rng)/shape)
+        self.scale = np.array(rng) / shape
+        self.radius = np.mean(np.array(rng) / shape)
         self.retina = np.zeros(self.shape + [3])
 
-        self.reset(sim);
+        self.reset(sim)
 
     def reset(self, sim):
         self.sim = sim
 
-    def step(self, focus) :
-        """ Run a single simulator step
+    def step(self, focus):
+        """Run a single simulator step
 
         Args:
 
@@ -132,13 +134,13 @@ class VisualSensor:
         for key in self.sim.bodies.keys():
             body = self.sim.bodies[key]
             vercs = np.vstack(body.fixtures[0].shape.vertices)
-            vercs = vercs[np.arange(len(vercs))+[0]]
-            data = [body.GetWorldPoint(vercs[x])
-                for x in range(len(vercs))]
-            body_pixels =  self.path2pixels(data, focus)
-            if body.color is None: body.color = [0.5, 0.5, 0.5]
+            vercs = vercs[np.arange(len(vercs)) + [0]]
+            data = [body.GetWorldPoint(vercs[x]) for x in range(len(vercs))]
+            body_pixels = self.path2pixels(data, focus)
+            if body.color is None:
+                body.color = [0.5, 0.5, 0.5]
             color = np.array(body.color)
-            body_pixels = body_pixels.reshape(body_pixels.shape + (1,))*(1 - color)
+            body_pixels = body_pixels.reshape(body_pixels.shape + (1,)) * (1 - color)
             self.retina += body_pixels
         self.retina = np.maximum(0, 1 - (self.retina))
         return self.retina
@@ -147,27 +149,32 @@ class VisualSensor:
 
         points = self.grid * self.scale + focus
 
-        path = Path(vertices) # make a polygon
+        path = Path(vertices)  # make a polygon
         points_in_path = path.contains_points(points, radius=self.radius)
-        img = 1.0*points_in_path.reshape(*self.shape, order='F').T #pixels
+        img = 1.0 * points_in_path.reshape(*self.shape, order="F").T  # pixels
 
         return img
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 
+
 class TestPlotter:
-    """ Plotter of simulations
+    """Plotter of simulations
     Builds a simple matplotlib graphic environment
     and render single steps of the simulation within it
 
     """
 
-    def __init__(self, env, xlim=[-10, 30], ylim=[-10, 30], figsize=None, offline=False):
+    def __init__(
+        self, env, xlim=[-10, 30], ylim=[-10, 30], figsize=None, offline=False
+    ):
         """
         Args:
             env (ArmSim): a emulator object
@@ -197,11 +204,13 @@ class TestPlotter:
             plt.delaxes(self.ax)
         self.ax = self.fig.add_subplot(111, aspect="equal")
         self.polygons = {}
-        for key in self.env.sim.bodies.keys() :
-            self.polygons[key] = Polygon([[0, 0]],
-                    ec=self.env.sim.bodies[key].color + [1],
-                    fc=self.env.sim.bodies[key].color + [1],
-                    closed=True)
+        for key in self.env.sim.bodies.keys():
+            self.polygons[key] = Polygon(
+                [[0, 0]],
+                ec=self.env.sim.bodies[key].color + [1],
+                fc=self.env.sim.bodies[key].color + [1],
+                closed=True,
+            )
 
             self.ax.add_artist(self.polygons[key])
 
@@ -212,19 +221,16 @@ class TestPlotter:
         else:
             self.ts = 0
 
-
     def onStep(self):
         pass
 
-    def step(self) :
-        """ Run a single emulator step
-        """
+    def step(self):
+        """Run a single emulator step"""
 
         for key in self.polygons:
             body = self.env.sim.bodies[key]
             vercs = np.vstack(body.fixtures[0].shape.vertices)
-            data = np.vstack([ body.GetWorldPoint(vercs[x])
-                for x in range(len(vercs))])
+            data = np.vstack([body.GetWorldPoint(vercs[x]) for x in range(len(vercs))])
             self.polygons[key].set_xy(data)
 
         self.onStep()
@@ -240,19 +246,20 @@ class TestPlotter:
             self.fig.canvas.draw()
             self.ts += 1
 
+
 class TestPlotterOneEye(TestPlotter):
     def __init__(self, *args, **kargs):
 
         super(TestPlotterOneEye, self).__init__(*args, **kargs)
-        self.eye_pos, = self.ax.plot(0, 0)
+        (self.eye_pos,) = self.ax.plot(0, 0)
 
     def reset(self):
         super(TestPlotterOneEye, self).reset()
-        self.eye_pos, = self.ax.plot(0, 0)
+        (self.eye_pos,) = self.ax.plot(0, 0)
 
     def onStep(self):
 
         pos = np.copy(self.env.eye_pos)
-        x = pos[0] + np.array([-1, -1, 1,  1, -1])*self.env.fovea_height*0.5
-        y = pos[1] + np.array([-1,  1, 1, -1, -1])*self.env.fovea_width*0.5
+        x = pos[0] + np.array([-1, -1, 1, 1, -1]) * self.env.fovea_height * 0.5
+        y = pos[1] + np.array([-1, 1, 1, -1, -1]) * self.env.fovea_width * 0.5
         self.eye_pos.set_data(x, y)

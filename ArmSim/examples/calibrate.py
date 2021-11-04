@@ -3,14 +3,14 @@ import gym
 import ArmSim
 
 rng = np.random.RandomState(62)
-env = gym.make('ArmSimOneArmOneEye-v0')
+env = gym.make("ArmSimOneArmOneEye-v0")
 env.set_world(3)
 stime = 10000
-action = [0, 0, 0, np.pi*0.3, np.pi*0.3]
+action = [0, 0, 0, np.pi * 0.3, np.pi * 0.3]
 for t in range(stime):
     env.render()
-    if t < stime/2:
-        action += 0*np.pi*rng.randn(5)
+    if t < stime / 2:
+        action += 0 * np.pi * rng.randn(5)
         action[3:] = 0
         action[:3] = np.maximum(-np.pi, np.minimum(0, action[:3]))
         print(action)
