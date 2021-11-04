@@ -8,13 +8,12 @@ A simple [gym](http://gym.openai.com/) environment using [pybox2d](https://githu
 
 ## Install
 
-1. Download de Box2DSim repo:
+1. Download de ArmSim repo:
 
-       git clone https://github.com/GOAL-Robots/CNR_170608_SOURCE_box2d_simulation.git
+       git clone https://github.com/francesco-mannella/ArmSim.git
 
-2. Install the Box2Dsim package:
-
-       cd CNR_170608_SOURCE_box2d_simulation
+2. Install the ArmSim package:
+       cd ArmSim
        pip install -e .
 
 ## Basic usage
@@ -22,9 +21,9 @@ A simple [gym](http://gym.openai.com/) environment using [pybox2d](https://githu
 ### One-arm scenario
 
     import gym
-    import box2dsim
+    import ArmSim
 
-    env = gym.make('Box2DSimOneArm-v0')
+    env = gym.make('ArmSimOneArm-v0')
 
     for t in range(10):  
       env.render()
